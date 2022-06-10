@@ -5,7 +5,7 @@ CNN_CONFIG = {
     'RECORD_PATH': '/mnt/qb/berens/users/jfadugba97/RetinaClassification/result/records/cnn/',
     'LEARNING_RATE': 1e-3,
     'INPUT_SIZE': 224,
-    'BATCH_SIZE': 128,
+    'BATCH_SIZE': 64,
     'EPOCHS': 1,
     'FEATURE_DIM': 2048,
     'DATA_AUGMENTATION': {

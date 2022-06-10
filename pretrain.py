@@ -28,9 +28,9 @@ def main():
     # run models for CNN pre_train
     run(cnn_model_names, CNN_CONFIG)
     # run models for ViT pre_train
-    run(vit_model_names, VIT_CONFIG)
-    # run models for ViT_+CNN pre_train
-    run(vit_cnn_model_names, VIT_CONFIG)
+    # run(vit_model_names, VIT_CONFIG)
+    # # run models for ViT_+CNN pre_train
+    # run(vit_cnn_model_names, VIT_CONFIG)
 
 
 
@@ -43,44 +43,46 @@ def run(model_list, PreTrain_CONFIG):
     input_size = PreTrain_CONFIG['INPUT_SIZE']
     data_aug=PreTrain_CONFIG['DATA_AUGMENTATION']
     # model config
-    feature_dim =PreTrain_CONFIG['FEATURE_DIM'] 
+    # feature_dim =PreTrain_CONFIG['FEATURE_DIM'] 
     learning_rate = PreTrain_CONFIG['LEARNING_RATE']
     epochs = PreTrain_CONFIG['EPOCHS']
     
-    save_dir = os.path.split(PreTrain_CONFIG['SAVE_PATH'])
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
+    # save_dir = os.path.split(PreTrain_CONFIG['SAVE_PATH'])
+    if not os.path.exists(PreTrain_CONFIG['SAVE_PATH']):
+        os.makedirs(PreTrain_CONFIG['SAVE_PATH'])
     
-    rec_dir = os.path.split(PreTrain_CONFIG['RECORD_PATH'])
-    if not os.path.exists(rec_dir):
-        os.makedirs(rec_dir)
+    # rec_dir = os.path.split(PreTrain_CONFIG['RECORD_PATH'])
+    if not os.path.exists(PreTrain_CONFIG['RECORD_PATH']):
+        os.makedirs(PreTrain_CONFIG['RECORD_PATH'])
 
 
 
     train_dataset, test_dataset, val_dataset = generate_stem_dataset(data_path, input_size, data_aug)
 
-    train_loader, val_loader, weighted_sampler = get_data_loader(train_dataset, val_dataset, batch_size, num_workers)
-
+    train_loader, val_loader, test_loader, weighted_sampler = get_data_loader(train_dataset, val_dataset, test_dataset, batch_size, num_workers)
 
     for pre_trained_model in model_list:
-
+        print('========================================')
+        print('PreTraining For: {}'.format(pre_trained_model))
+        print('========================================')
         wandb.init(project='diabetic_binary_experiment',
                     job_type='train',
                     name=pre_trained_model,
-                    dir=model_path)
+                    dir=model_path,
+                    settings=wandb.Settings(start_method="fork"))
 
         save_path = PreTrain_CONFIG['SAVE_PATH'] + pre_trained_model +'.pt'
         record_path = PreTrain_CONFIG['RECORD_PATH'] + pre_trained_model +'.rec'
-        model = PreTrainModel(pre_trained_model, feature_dim)
+        model = PreTrainModel(pre_trained_model)
         model.to(device)
 
         # track gradients
         wandb.watch(model)
 
         # print model config    
-        module = model.module if isinstance(model, torch.nn.DataParallel) else model
+        # module = model.module if isinstance(model, torch.nn.DataParallel) else model
 
-        print_msg('Trainable layers: ', ['{}\t{}'.format(k, v) for k, v in module.layer_configs()])
+        # print_msg('Trainable layers: ', ['{}\t{}'.format(k, v) for k, v in module.layer_configs()])
 
         # define loss and optimizier
         criterion = torch.nn.MSELoss()
@@ -97,14 +99,10 @@ def run(model_list, PreTrain_CONFIG):
             open(record_path, 'wb')
         )
 
-        # test the stem network
-        evaluate(save_path, test_dataset, num_workers)
+        # test the network
+        evaluate(save_path,device, test_loader)
 
         wandb.finish()
-
-
-
-
 
 
 if __name__ == '__main__':

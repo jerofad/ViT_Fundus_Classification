@@ -42,10 +42,12 @@ def train(model, train_loader, val_loader, loss_function, optimizer, epochs, sav
             correct += accuracy(y_pred, y) * y.size(0)
             avg_loss = epoch_loss / (step + 1)
             avg_acc = correct / total
-            progress.set_description(
-                'epoch: {}, loss: {:.6f}, acc: {:.4f}'
-                .format(epoch, avg_loss, avg_acc)
-            )
+
+            if step % 200 == 0: # print every 200 steps
+                progress.set_description(
+                    'epoch: {}, loss: {:.6f}, acc: {:.4f}'
+                    .format(epoch, avg_loss, avg_acc)
+                )
 
 
         # save model
@@ -87,8 +89,9 @@ def _eval(model, device, dataloader, c_matrix=None):
 
     correct = 0
     total = 0
-    for test_data in dataloader:
-        X= test_data['pixel_values']
+    progress = tqdm(enumerate(dataloader))
+    for step, test_data in progress:
+        X = test_data['pixel_values']
         y = test_data['labels']
 
         X, y = X.to(device), y.float().to(device)
@@ -103,16 +106,22 @@ def _eval(model, device, dataloader, c_matrix=None):
     return acc
 
 
-def evaluate(model_path, test_loader):
+def evaluate(model_path, device, test_loader):
     c_matrix = np.zeros((5, 5), dtype=int)
 
-    trained_model = torch.load(model_path).cuda()
-    test_acc = _eval(trained_model, test_loader, c_matrix)
+    trained_model = torch.load(model_path, map_location=torch.device(device))
+    test_acc = _eval(trained_model, device, test_loader, c_matrix)
+    q_kappa = quadratic_weighted_kappa(c_matrix)
+    #Log
+    wandb.log({"Test Accuracy": test_acc})
+    wandb.log({"Kappaq":q_kappa})
+    wandb.log({"Conf_Matrix": c_matrix})
+
     print('========================================')
     print('Finished! test acc: {}'.format(test_acc))
     print('Confusion Matrix:')
     print(c_matrix)
-    print('quadratic kappa: {}'.format(quadratic_weighted_kappa(c_matrix)))
+    print('quadratic kappa: {}'.format(q_kappa))
     print('========================================')
 
 

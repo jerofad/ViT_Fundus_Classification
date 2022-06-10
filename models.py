@@ -6,7 +6,7 @@ from torchvision.models import resnet50
 # vision transformer models
 from vit_pytorch.efficient import ViT as eff_ViT
 from vit_pytorch import ViT as vanilla_ViT
-from vit_pytorch import SimpleViT
+# from vit_pytorch import SimpleViT
 from vit_pytorch.distill import DistillableViT, DistillWrapper
 from vit_pytorch.cvt import CvT
 
@@ -19,13 +19,14 @@ import timm
 """
 
 class PreTrainModel(nn.Module):
-    def __init__(self, model_name, feature_dim, pretrained=True):
+    def __init__(self, model_name, pretrained=True):
         super().__init__()
         """
         """
         self.model_name = model_name
         self.cnn = timm.create_model(self.model_name, pretrained=pretrained, num_classes=0)
-        self.feature_dim = feature_dim
+        self.feature_dim = self.cnn.num_features
+
         # Used for Regression.
         self.fc = nn.Sequential(
             nn.Dropout(p=0.5),
@@ -41,7 +42,9 @@ class PreTrainModel(nn.Module):
     def forward(self, x):
         cnn_features = self.cnn(x)
         # reshape to maxpool shape req
+        # print(cnn_features.size())
         cnn_features = cnn_features.view(cnn_features.size(0),1,-1)
+        # print(cnn_features.size())
         predict = self.fc(cnn_features)
         predict = torch.squeeze(predict)
         return predict
@@ -93,19 +96,19 @@ def vanilla(CONFIG, device):
     return model
 
 
-def simple_vit(CONFIG, device):
+# def simple_vit(CONFIG, device):
 
-    model = SimpleViT(
-        image_size=CONFIG['image_size'],
-        patch_size=CONFIG['patch_size'],
-        num_classes=CONFIG['num_classes'],
-        dim=CONFIG['dim'],
-        depth=CONFIG['depth'],
-        heads=CONFIG['heads'],
-        mlp_dim=CONFIG['mlp_dim']
-    ).to(device)
+#     model = SimpleViT(
+#         image_size=CONFIG['image_size'],
+#         patch_size=CONFIG['patch_size'],
+#         num_classes=CONFIG['num_classes'],
+#         dim=CONFIG['dim'],
+#         depth=CONFIG['depth'],
+#         heads=CONFIG['heads'],
+#         mlp_dim=CONFIG['mlp_dim']
+#     ).to(device)
 
-    return model
+#     return model
 
 
 # Models that make use of CNN
