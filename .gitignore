@@ -1,0 +1,5 @@
+__pycache__/
+configs/__pycache__/
+logs/*
+run.sh
+unit_test.ipynb
