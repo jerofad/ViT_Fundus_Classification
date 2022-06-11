@@ -6,7 +6,7 @@ CNN_CONFIG = {
     'LEARNING_RATE': 1e-3,
     'INPUT_SIZE': 224,
     'BATCH_SIZE': 64,
-    'EPOCHS': 1,
+    'EPOCHS': 20,
     'FEATURE_DIM': 2048,
     'DATA_AUGMENTATION': {
         'scale': (1 / 1.15, 1.15),
@@ -15,7 +15,7 @@ CNN_CONFIG = {
         'translation_ratio': (40 / 112, 40 / 112),  # 40 pixel in the report
         'sigma': 0.5
     },
-    "NUM_WORKERS": 12
+    "NUM_WORKERS": 2
 
 }
 
@@ -26,7 +26,7 @@ VIT_CONFIG = {
     'RECORD_PATH': '/mnt/qb/berens/users/jfadugba97/RetinaClassification/result/records/ViT/',
     'LEARNING_RATE': 1e-3,
     'INPUT_SIZE': 224,
-    'BATCH_SIZE': 128,
+    'BATCH_SIZE': 64,
     'EPOCHS': 1,
     'FEATURE_DIM': 2048,
     'DATA_AUGMENTATION': {
@@ -36,6 +36,6 @@ VIT_CONFIG = {
         'translation_ratio': (40 / 112, 40 / 112),  # 40 pixel in the report
         'sigma': 0.5
     },
-    "NUM_WORKERS": 12
+    "NUM_WORKERS": 2
 
 }

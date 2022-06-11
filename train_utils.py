@@ -42,12 +42,11 @@ def train(model, train_loader, val_loader, loss_function, optimizer, epochs, sav
             correct += accuracy(y_pred, y) * y.size(0)
             avg_loss = epoch_loss / (step + 1)
             avg_acc = correct / total
-
-            if step % 200 == 0: # print every 200 steps
-                progress.set_description(
-                    'epoch: {}, loss: {:.6f}, acc: {:.4f}'
-                    .format(epoch, avg_loss, avg_acc)
-                )
+            # if step % 200 == 0: # print every 200 steps
+            #     progress.set_description(
+            #         'epoch: {}, loss: {:.6f}, acc: {:.4f}'
+            #         .format(epoch, avg_loss, avg_acc)
+            #     )
 
 
         # save model
@@ -61,8 +60,8 @@ def train(model, train_loader, val_loader, loss_function, optimizer, epochs, sav
             print_msg('Model save at {}'.format(save_path))
 
         # wandblogging
-        wandb.log({"epoch": epoch, "Train_loss": avg_loss})
-        wandb.log({"epoch": epoch, "Train_Acc": acc })
+        wandb.log({"epoch": epoch, "Loss": avg_loss})
+        wandb.log({"epoch": epoch, "Accuracy": acc }) #reporting validation accuracy
         # record
         record_epochs.append(epoch)
         accs.append(acc)
