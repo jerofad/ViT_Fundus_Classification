@@ -7,7 +7,7 @@ import pickle
 import os
 from data import get_data_loader
 from data_utils import generate_stem_dataset
-from models import PreTrainModel
+from models import CNNPreTrainModel, ViTPreTrainModel
 from train_utils import evaluate, print_msg, train
 from configs.pretrain_config import *
 
@@ -83,7 +83,11 @@ def run(pre_trained_model, PreTrain_CONFIG):
 
     save_path = PreTrain_CONFIG['SAVE_PATH'] + pre_trained_model +'.pt'
     record_path = PreTrain_CONFIG['RECORD_PATH'] + pre_trained_model +'.rec'
-    model = PreTrainModel(pre_trained_model)
+    if args.config == 'vit':
+        # use vit pretrain model
+        model = ViTPreTrainModel(pre_trained_model)
+    else:
+        model = CNNPreTrainModel(pre_trained_model)
     model.to(device)
 
     # track gradients
@@ -98,7 +102,7 @@ def run(pre_trained_model, PreTrain_CONFIG):
     criterion = torch.nn.MSELoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, momentum=0.9, nesterov=True, weight_decay=0.0005)
     # learning rate decay
-    milestones = [150, 220]
+    milestones = [5,10,15]
     lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=milestones, gamma=0.1)
 
     record_epochs, accs, losses = train(model, train_loader, val_loader, criterion, optimizer, epochs, save_path, device,

@@ -18,7 +18,7 @@ import timm
     hence we define a class for pretraining models
 """
 
-class PreTrainModel(nn.Module):
+class CNNPreTrainModel(nn.Module):
     def __init__(self, model_name, pretrained=True):
         super().__init__()
         """
@@ -46,6 +46,37 @@ class PreTrainModel(nn.Module):
         cnn_features = cnn_features.view(cnn_features.size(0),1,-1)
         # print(cnn_features.size())
         predict = self.fc(cnn_features)
+        predict = torch.squeeze(predict)
+        return predict
+
+class ViTPreTrainModel(nn.Module):
+    def __init__(self, model_name, pretrained=True):
+        super().__init__()
+        """
+        """
+        self.model_name = model_name
+        self.vit = timm.create_model(self.model_name, pretrained=pretrained, num_classes=0)
+        self.feature_dim = self.vit.num_features
+
+        # Used for Regression.
+        self.fc = nn.Sequential(
+            nn.Dropout(p=0.5),
+            nn.Linear(self.feature_dim, 2048),
+            nn.MaxPool1d(kernel_size=2, stride=2),
+            nn.LeakyReLU(negative_slope=0.01),
+            nn.Dropout(p=0.5),
+            nn.Linear(1024, 2048),
+            nn.MaxPool1d(kernel_size=2, stride=2),
+            nn.LeakyReLU(negative_slope=0.01),
+            nn.Linear(1024, 1)
+        )
+    def forward(self, x):
+        vit_features = self.vit(x)
+        # reshape to maxpool shape req
+        # print(cnn_features.size())
+        vit_features = vit_features.view(vit_features.size(0),1,-1)
+        # print(cnn_features.size())
+        predict = self.fc(vit_features)
         predict = torch.squeeze(predict)
         return predict
 

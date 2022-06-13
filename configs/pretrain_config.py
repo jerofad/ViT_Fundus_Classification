@@ -27,7 +27,7 @@ VIT_CONFIG = {
     'LEARNING_RATE': 1e-3,
     'INPUT_SIZE': 224,
     'BATCH_SIZE': 64,
-    'EPOCHS': 1,
+    'EPOCHS': 20,
     'FEATURE_DIM': 2048,
     'DATA_AUGMENTATION': {
         'scale': (1 / 1.15, 1.15),

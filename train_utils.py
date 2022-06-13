@@ -23,10 +23,10 @@ def train(model, train_loader, val_loader, loss_function, optimizer, epochs, sav
             y = train_data['labels']
 
             X, y = X.to(device), y.float().to(device)
-            
 
             # forward
             y_pred = model(X)
+            # print(y_pred)
             loss = loss_function(y_pred, y)
             if extra_loss:
                 loss += extra_loss(model, X, y_pred, y)
@@ -34,6 +34,7 @@ def train(model, train_loader, val_loader, loss_function, optimizer, epochs, sav
             # backward
             optimizer.zero_grad()
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 2.0 )
             optimizer.step()
 
             # metrics
