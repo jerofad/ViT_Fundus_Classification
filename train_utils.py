@@ -34,7 +34,7 @@ def train(model, train_loader, val_loader, loss_function, optimizer, epochs, sav
             # backward
             optimizer.zero_grad()
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), 2.0 )
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             optimizer.step()
 
             # metrics
@@ -76,7 +76,7 @@ def train(model, train_loader, val_loader, loss_function, optimizer, epochs, sav
         if lr_scheduler:
             lr_scheduler.step()
             if epoch in lr_scheduler.milestones:
-                print_msg('Learning rate decayed to {}'.format(lr_scheduler.get_lr()[0]))
+                print_msg('Learning rate decayed to {}'.format(lr_scheduler.get_last_lr()[0]))
 
     print('Best validation accuracy: {}'.format(max_kappa))
     return record_epochs, accs, losses

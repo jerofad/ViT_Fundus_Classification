@@ -7,7 +7,7 @@ import pickle
 import os
 from data import get_data_loader
 from data_utils import generate_stem_dataset
-from models import CNNPreTrainModel, ViTPreTrainModel
+from models import PreTrainModel, ViTPreTrainModel
 from train_utils import evaluate, print_msg, train
 from configs.pretrain_config import *
 
@@ -87,7 +87,7 @@ def run(pre_trained_model, PreTrain_CONFIG):
         # use vit pretrain model
         model = ViTPreTrainModel(pre_trained_model)
     else:
-        model = CNNPreTrainModel(pre_trained_model)
+        model = PreTrainModel(pre_trained_model)
     model.to(device)
 
     # track gradients

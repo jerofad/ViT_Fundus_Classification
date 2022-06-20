@@ -18,7 +18,7 @@ import timm
     hence we define a class for pretraining models
 """
 
-class CNNPreTrainModel(nn.Module):
+class PreTrainModel(nn.Module):
     def __init__(self, model_name, pretrained=True):
         super().__init__()
         """

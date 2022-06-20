@@ -26,7 +26,7 @@ VIT_CONFIG = {
     'RECORD_PATH': '/mnt/qb/berens/users/jfadugba97/RetinaClassification/result/records/ViT/',
     'LEARNING_RATE': 1e-3,
     'INPUT_SIZE': 224,
-    'BATCH_SIZE': 64,
+    'BATCH_SIZE': 32,
     'EPOCHS': 20,
     'FEATURE_DIM': 2048,
     'DATA_AUGMENTATION': {
@@ -36,6 +36,6 @@ VIT_CONFIG = {
         'translation_ratio': (40 / 112, 40 / 112),  # 40 pixel in the report
         'sigma': 0.5
     },
-    "NUM_WORKERS": 2
+    "NUM_WORKERS": 12
 
 }
